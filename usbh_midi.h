@@ -43,7 +43,7 @@ protected:
   static const uint8_t	epDataOutIndexVSP;			// DataOUT endpoint index(Vendor Specific Protocl)
 
   boolean isMidiFound;
-  
+
   /* mandatory members */
   USB      *pUsb;
   uint8_t  bAddress;
@@ -75,12 +75,15 @@ public:
   // backward compatibility functions
   inline uint8_t RcvData(uint16_t *bytes_rcvd, uint8_t *dataptr){ return RecvData(bytes_rcvd, dataptr); };
   inline uint8_t RcvData(uint8_t *outBuf){ return RecvData(outBuf); };
-  
+
   // USBDeviceConfig implementation
   virtual uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
   virtual uint8_t Release();
   virtual uint8_t Poll(){}; //not implemented
   virtual uint8_t GetAddress() { return bAddress; };
 };
+#ifdef LOAD_USB_MIDI
+#include "usbh_midi_INLINE.h"
+#endif
 
 #endif //_USBH_MIDI_H_

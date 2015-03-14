@@ -1,5 +1,8 @@
 /*
  *******************************************************************************
+ * USB-MIDI class driver for USB Host Shield 3.0 Library
+ *
+ * Based on:
  * USB-MIDI class driver for USB Host Shield 2.0 Library
  * Copyright 2012-2013 Yuuichi Akagawa
  *
@@ -24,9 +27,12 @@
  *******************************************************************************
  */
 
-#include "usbh_midi.h"
+#if defined(_USBH_MIDI_H_) && !defined(UHS_USB_MIDI_LOADED)
+#define UHS_USB_MIDI_LOADED
+
+
 //////////////////////////
-// MIDI MESAGES 
+// MIDI MESAGES
 // midi.org/techspecs/
 //////////////////////////
 // STATUS BYTES
@@ -116,7 +122,7 @@ uint8_t USBH_MIDI::Init(uint8_t parent, uint8_t port, bool lowspeed)
   UsbDevice  *p = NULL;
   EpInfo     *oldep_ptr = NULL;
   uint8_t    num_of_conf;  // number of configurations
-  
+
   // get memory address of USB device address pool
   AddressPool &addrPool = pUsb->GetAddressPool();
 #ifdef DEBUG
@@ -149,7 +155,7 @@ uint8_t USBH_MIDI::Init(uint8_t parent, uint8_t port, bool lowspeed)
   // Restore p->epinfo
   p->epinfo = oldep_ptr;
 
-  if( rcode ){ 
+  if( rcode ){
     goto FailGetDevDescr;
   }
 
@@ -160,7 +166,7 @@ uint8_t USBH_MIDI::Init(uint8_t parent, uint8_t port, bool lowspeed)
   }
 
   // Extract Max Packet Size from device descriptor
-  epInfo[0].maxPktSize = (uint8_t)((USB_DEVICE_DESCRIPTOR*)buf)->bMaxPacketSize0; 
+  epInfo[0].maxPktSize = (uint8_t)((USB_DEVICE_DESCRIPTOR*)buf)->bMaxPacketSize0;
 
   // Assign new address to the device
   rcode = pUsb->setAddr( 0, 0, bAddress );
@@ -172,7 +178,7 @@ uint8_t USBH_MIDI::Init(uint8_t parent, uint8_t port, bool lowspeed)
   }//if (rcode...
 #ifdef DEBUG
   USBTRACE2("Addr:", bAddress);
-#endif  
+#endif
   p->lowspeed = false;
 
   //get pointer to assigned address record
@@ -253,7 +259,7 @@ void USBH_MIDI::parseConfigDescr( byte addr, byte conf )
   rcode = pUsb->getConfDescr( addr, 0, 4, conf, buf );
   if( rcode ){
     return;
-  }  
+  }
   total_length = buf[2] | ((int)buf[3] << 8);
   if( total_length > DESC_BUFF_SIZE ) {    //check if total length is larger than buffer
     total_length = DESC_BUFF_SIZE;
@@ -263,10 +269,10 @@ void USBH_MIDI::parseConfigDescr( byte addr, byte conf )
   rcode = pUsb->getConfDescr( addr, 0, total_length, conf, buf ); //get the whole descriptor
   if( rcode ){
     return;
-  }  
+  }
 
   //parsing descriptors
-  while( buf_ptr < buf + total_length ) {  
+  while( buf_ptr < buf + total_length ) {
     descr_length = *( buf_ptr );
     descr_type   = *( buf_ptr + 1 );
     switch( descr_type ) {
@@ -304,7 +310,7 @@ void USBH_MIDI::parseConfigDescr( byte addr, byte conf )
         break;
       default:
         break;
-    }//switch( descr_type  
+    }//switch( descr_type
     buf_ptr += descr_length;    //advance buffer pointer
   }//while( buf_ptr <=...
 }
@@ -313,7 +319,7 @@ void USBH_MIDI::parseConfigDescr( byte addr, byte conf )
 uint8_t USBH_MIDI::Release()
 {
   pUsb->GetAddressPool().FreeAddress(bAddress);
-  bNumEP       = 1;		//must have to be reset to 1	
+  bNumEP       = 1;		//must have to be reset to 1
   bAddress     = 0;
   bPollEnable  = false;
   readPtr      = 0;
@@ -349,7 +355,7 @@ uint8_t USBH_MIDI::RecvData(uint8_t *outBuf)
   if( rcode != 0 ) {
     return 0;
   }
-  
+
   //if all data is zero, no valid data received.
   if( recvBuf[0] == 0 && recvBuf[1] == 0 && recvBuf[2] == 0 && recvBuf[3] == 0 ) {
     return 0;
@@ -381,7 +387,7 @@ uint8_t USBH_MIDI::SendData(uint8_t *dataptr, byte nCable)
 
   buf[0] = (nCable << 4) | (msg >> 4);
   if( msg < 0xf0 ) msg = msg & 0xf0;
-  
+
 
   //Building USB-MIDI Event Packets
   buf[1] = dataptr[0];
@@ -494,7 +500,7 @@ unsigned int USBH_MIDI::countSysExDataSize(uint8_t *dataptr)
   {
     dataptr++;
     c++;
-    
+
     //Limiter (upto 256 bytes)
     if(c > 256){
       c = 0;
@@ -545,3 +551,5 @@ uint8_t USBH_MIDI::SendSysEx(uint8_t *dataptr, unsigned int datasize, byte nCabl
   }
   return(rc);
 }
+
+#endif

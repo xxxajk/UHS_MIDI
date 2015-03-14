@@ -1,5 +1,8 @@
 # USBH_MIDI v0.1.0
 
+
+USB-MIDI class driver for Arduino [USB Host Shield 3.0 Library][UHS3]
+Based on original code for:
 USB-MIDI class driver for Arduino [USB Host Shield 2.0 Library][UHS2]
 
 You can convert USB MIDI keyboard  to legacy serial MIDI.
@@ -19,23 +22,25 @@ Please put into a USBH_MIDI directory to your Arduino libraries directory.
 ## API
 
 ### uint8_t RecvData(uint16_t *bytes_rcvd, uint8_t *dataptr);
-Receive raw USB-MIDI Event Packets (4 bytes)  
+Receive raw USB-MIDI Event Packets (4 bytes)
 return value is 0:Success, non-zero:Error(MAX3421E HRSLT)
 
 ### uint8_t RecvData(uint8_t *outBuf);
-Receive MIDI messages (3 bytes)  
+Receive MIDI messages (3 bytes)
 return value is MIDI message length(0-3)
 
 ### uint8_t SendData(uint8_t *dataptr, byte nCable=0);
-Send MIDI message. You can set CableNumber(default=0).  
+Send MIDI message. You can set CableNumber(default=0).
 return value is 0:Success, non-zero:Error(MAX3421E HRSLT)
 
 ### uint8_t SendSysEx(uint8_t *dataptr, unsigned int datasize, byte nCable=0);
-Send SysEx MIDI message. You can set CableNumber(default=0).  
-return value is 0:Success, non-zero:Error(MAX3421E HRSLT)  
+Send SysEx MIDI message. You can set CableNumber(default=0).
+return value is 0:Success, non-zero:Error(MAX3421E HRSLT)
 note: You must set first byte:0xf0 and last byte:0xf7
 
 ## ChangeLog
+2015.03.13 xxxajk
+* Initial pull, and start of port to version 3 API for UHS USB
 
 2014.07.06
 * Merge IOP_ArduinoMIDI branch into master
@@ -59,14 +64,14 @@ note: You must set first byte:0xf0 and last byte:0xf7
 2013.08.28
 * Fix MIDI Channel issue.
 
-2013.08.18  
+2013.08.18
 * RcvData() Return type is changed to uint8_t.
 * Fix examples.
 
-2012.06.22  
+2012.06.22
 * Support MIDI out and loosen device check
 
-2012.04.21  
+2012.04.21
 * First release
 
 
@@ -79,3 +84,4 @@ Licensed under the [GNU General Public License v2.0][GPL2]
 [GPL2]: http://www.gnu.org/licenses/gpl2.html
 [wiki]: https://github.com/YuuichiAkagawa/USBH_MIDI/wiki
 [UHS2]: https://github.com/felis/USB_Host_Shield_2.0
+[UHS3]: https://github.com/felis/UHS30
