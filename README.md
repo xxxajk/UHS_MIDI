@@ -2,7 +2,9 @@
 
 
 USB-MIDI class driver for Arduino [USB Host Shield 3.0 Library][UHS3]
+
 Based on original code for:
+
 USB-MIDI class driver for Arduino [USB Host Shield 2.0 Library][UHS2]
 
 You can convert USB MIDI keyboard  to legacy serial MIDI.
